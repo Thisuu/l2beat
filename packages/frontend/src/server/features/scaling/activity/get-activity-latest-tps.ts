@@ -1,10 +1,7 @@
 import { type Layer2, type Layer3 } from '@l2beat/config'
 import { UnixTime } from '@l2beat/shared-pure'
 import { groupBy } from 'lodash'
-import {
-  unstable_cache as cache,
-  unstable_noStore as noStore,
-} from 'next/cache'
+import { unstable_cache as cache } from 'next/cache'
 import { env } from '~/env'
 import { db } from '~/server/database'
 import { calculatePercentageChange } from '~/utils/calculate-percentage-change'
@@ -15,7 +12,6 @@ export async function getActivityLatestTps(projects: (Layer2 | Layer3)[]) {
   if (env.MOCK) {
     return getMockActivityLatestTps(projects)
   }
-  noStore()
   return getCachedActivityLatestTps(projects)
 }
 

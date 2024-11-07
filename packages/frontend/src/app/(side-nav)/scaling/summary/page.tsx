@@ -3,13 +3,14 @@ import { ScalingSummaryTvlChart } from '~/components/chart/tvl/scaling-summary-t
 import { MainPageCard } from '~/components/main-page-card'
 import { MainPageHeader } from '~/components/main-page-header'
 import { getScalingSummaryEntries } from '~/server/features/scaling/summary/get-scaling-summary-entries'
-import { HydrateClient, api } from '~/trpc/server'
+import { HydrateClient } from '~/trpc/server'
 import { getDefaultMetadata } from '~/utils/metadata'
 import { ScalingAssociatedTokensContextProvider } from '../_components/scaling-associated-tokens-context'
 import { ScalingFilterContextProvider } from '../_components/scaling-filter-context'
 import { ChartTabs } from './_components/chart-tabs'
 import { ScalingSummaryTables } from './_components/scaling-summary-tables'
 
+export const revalidate = 120
 export const metadata = getDefaultMetadata({
   openGraph: {
     url: '/scaling/summary',
@@ -22,20 +23,6 @@ const UNIT = 'usd'
 export default async function Page() {
   const entries = await getScalingSummaryEntries()
 
-  await Promise.all([
-    api.tvl.chart.prefetch({
-      range: TIME_RANGE,
-      excludeAssociatedTokens: false,
-      filter: { type: 'layer2' },
-    }),
-    api.activity.chart.prefetch({
-      range: TIME_RANGE,
-      filter: { type: 'all' },
-    }),
-    api.activity.chartStats.prefetch({
-      filter: { type: 'all' },
-    }),
-  ])
   return (
     <HydrateClient>
       <MainPageHeader>Summary</MainPageHeader>
